@@ -99,7 +99,19 @@ public class TurtleSoup {
      */
     public static double calculateHeadingToPoint(double currentHeading, int currentX, int currentY,
                                                  int targetX, int targetY) {
-        throw new RuntimeException("implement me!");
+        double changeInX = targetX - currentX;
+        double changeInY = targetY - currentY;
+        double theta = Math.toDegrees(Math.atan2(changeInY, changeInX));
+        
+        System.out.println(theta);
+        double rotatedAngle = 90 - (theta + currentHeading);
+        
+        while(rotatedAngle < 0){
+            rotatedAngle += 360;
+        }
+        System.out.println(rotatedAngle);
+        return rotatedAngle;
+        
     }
 
     /**
@@ -143,10 +155,10 @@ public class TurtleSoup {
         DrawableTurtle turtle = new DrawableTurtle();
 
         //drawSquare(turtle, 40);
-        drawRegularPolygon(turtle, 3, 50);
-
+        //drawRegularPolygon(turtle, 3, 50);
+        calculateHeadingToPoint(30.0, 0, 1, 0, 0);
         // draw the window
-        turtle.draw();
+        //turtle.draw();
     }
 
 }
