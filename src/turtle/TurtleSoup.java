@@ -15,13 +15,17 @@ public class TurtleSoup {
      * @param sideLength length of each side
      */
     public static void drawSquare(Turtle turtle, int sideLength) {
-        turtle.forward(100);
+        turtle.color(PenColor.GREEN);
+        turtle.forward(sideLength);
         turtle.turn(90.0);
-        turtle.forward(100);
+        turtle.color(PenColor.GREEN);
+        turtle.forward(sideLength);
         turtle.turn(90.0);
-        turtle.forward(100);
+        turtle.color(PenColor.GREEN);
+        turtle.forward(sideLength);
         turtle.turn(90.0);
-        turtle.forward(100);
+        turtle.color(PenColor.GREEN);
+        turtle.forward(sideLength);
     }
 
     /**
@@ -72,6 +76,7 @@ public class TurtleSoup {
     public static void drawRegularPolygon(Turtle turtle, int sides, int sideLength) {
         int i = 0;
         while(i < sides){
+            turtle.color(PenColor.RED);
             turtle.forward(sideLength);
             turtle.turn(-180 - calculateRegularPolygonAngle(sides));
             i++;
@@ -102,16 +107,14 @@ public class TurtleSoup {
         double changeInX = targetX - currentX;
         double changeInY = targetY - currentY;
         double theta = Math.toDegrees(Math.atan2(changeInY, changeInX));
-        
-        System.out.println(theta);
+                
         double rotatedAngle = 90 - (theta + currentHeading);
         
         while(rotatedAngle < 0){
             rotatedAngle += 360;
         }
-        System.out.println(rotatedAngle);
-        return rotatedAngle;
         
+        return rotatedAngle;        
     }
 
     /**
@@ -129,9 +132,41 @@ public class TurtleSoup {
      *         otherwise of size (# of points) - 1
      */
     public static List<Double> calculateHeadings(List<Integer> xCoords, List<Integer> yCoords) {
-        throw new RuntimeException("implement me!");
+        
+        double currentHeading = 0.0;
+        List<Double> headingAdjustments = new ArrayList<Double>();
+        
+        for(int i = 0; i < xCoords.size() - 1; i++){
+            headingAdjustments.add(calculateHeadingToPoint(currentHeading, xCoords.get(i), yCoords.get(i), xCoords.get(i + 1), yCoords.get(i + 1)));
+            currentHeading = headingAdjustments.get(i); 
+        }
+                
+        return headingAdjustments;
     }
 
+    /**
+     * Given a determinate number for quantity of points and a radius value.
+     * Generates X and Y points from an equation.
+     *   
+     * @param xPointsQuantity quantity of generated points
+     * @param radius value of radius
+     * @return a bi-dimensional Double array of generated X and Y points
+     */
+    
+    public static Double[][] generateGraphicFromFunction(int xPointsQuantity, double radius){
+        Double[][] xyPoints = new Double[xPointsQuantity][2];
+        //From (x - 0)2 + (y - 0)2 = r2
+        double x = 0.0;
+        
+        for(int i = 0; i < xyPoints.length; i++){
+            xyPoints[i][0] = x;
+            //y = f(x) = sqrt(r2 - x2)
+            xyPoints[i][1] = Math.sqrt(Math.pow(radius, 2.0) - Math.pow(x, 2.0));
+            x += 1.0;             
+        }
+        
+        return xyPoints;
+    }
     /**
      * Draw your personal, custom art.
      * 
@@ -139,9 +174,23 @@ public class TurtleSoup {
      * function, draw something interesting; the complexity can be as little or as much as you want.
      * 
      * @param turtle the turtle context
+     * @param xPointsQuantity quantity of generated points
+     * @param radius value of radius
      */
-    public static void drawPersonalArt(Turtle turtle) {
-        throw new RuntimeException("implement me!");
+    public static void drawPersonalArt(Turtle turtle, int xPointsQuantity, double radius) {
+        List<Integer> xCoords = new ArrayList<Integer>();               
+        List<Integer> yCoords = new ArrayList<Integer>();
+        for(int i = 0; i < xPointsQuantity; i++){
+            xCoords.add(generateGraphicFromFunction(xPointsQuantity, radius)[i][0].intValue());            
+            yCoords.add(generateGraphicFromFunction(xPointsQuantity, radius)[i][1].intValue());            
+        }
+                       
+        int sideLength = 100;
+        for(int i = 0; i < xCoords.size() - 1; i++){
+            turtle.color(PenColor.ORANGE);
+            turtle.forward(sideLength);
+            turtle.turn(calculateHeadings(xCoords, yCoords).get(i));
+        }
     }
 
     /**
@@ -154,11 +203,17 @@ public class TurtleSoup {
     public static void main(String args[]) {
         DrawableTurtle turtle = new DrawableTurtle();
 
-        //drawSquare(turtle, 40);
-        //drawRegularPolygon(turtle, 3, 50);
-        calculateHeadingToPoint(30.0, 0, 1, 0, 0);
+        drawSquare(turtle, 70);
+        drawRegularPolygon(turtle, 100, 5);        
+        /*calculateHeadingToPoint(30.0, 0, 1, 0, 0);
+        List<Integer> xCoords = new ArrayList<Integer>();
+        xCoords.add(0); xCoords.add(1); xCoords.add(1);        
+        List<Integer> yCoords = new ArrayList<Integer>();
+        yCoords.add(0); yCoords.add(1); yCoords.add(2);        
+        calculateHeadings(xCoords, yCoords);        
+        //generateGraphicFromFunction(20);*/
+        drawPersonalArt(turtle, 9, 100.0);
         // draw the window
-        //turtle.draw();
+        turtle.draw();
     }
-
 }
